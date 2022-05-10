@@ -5,6 +5,8 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
+#include <algorithm>
+
 using namespace std::chrono;
 
 void swap(int &x, int &y){ //функция смены двух элементов местами//
@@ -26,6 +28,21 @@ void Bubble_Sort1(std::vector<int> &a){ //пузырьковая сортиро�
     }
 }// алгоритмическая сложность O(N^2)//
 
+void couting_sort(std::vector<int> &array) {
+    if (array.size() == 0) return;
+    auto p = std::minmax_element(array.begin(), array.end());
+    int min = *p.first;
+    int dist = *p.second - min + 1;
+    std::vector<int> t(dist, 0);
+
+    for (auto i: array) t[i - min]++;
+
+    for (int i = 0, idx = 0; i < t.size(); ++i)
+        for (int j = 0; j < t[i]; ++j)
+            array[idx++] = i + min;
+
+}; // O(n)
+
 void mix(std::vector<int> &a, int value){ // рандомно заполняем массив
     for(int i = 0; i < value; i++){
         a.push_back(rand() % 1000);
@@ -40,10 +57,11 @@ void printArr(const std::vector<int> &a){
 }
 
 int main(){
+    std::ofstream fout("AverageCounting.txt");
     high_resolution_clock::time_point t1, t2;
     std::vector<int> v;
     std::vector<long long int> times;
-    for (int i = 1; i <= 4; i++)
+    for (int i = 1; i <= 9; i++)
     {
         long long duration_total = 0;
         for (int j = 0; j < 10; j++)
@@ -53,7 +71,7 @@ int main(){
                 v.emplace_back(rand());
             }
             t1 = high_resolution_clock::now();
-            Bubble_Sort1(v);
+            couting_sort(v);
             t2 = high_resolution_clock::now();
             long long duration = duration_cast<microseconds>(t2 - t1).count();
             duration_total += duration;
@@ -66,9 +84,10 @@ int main(){
     }
     std::cout << std::endl;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 9; i++)
     {
         std::cout << pow(10, i + 1) << " : " << times[i] << "us"<< std::endl;
+        fout << pow(10, i + 1) << " : " << times[i] << "us"<< std::endl;
     }
     return 0;
 }
